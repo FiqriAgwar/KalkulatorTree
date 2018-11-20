@@ -72,7 +72,7 @@ bool IsUnerRight(BinTree P);
 bool IsBiner(BinTree P);
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon biner: mempunyai subpohon kiri dan subpohon kanan*/
 
-void ChangeAkar(BinTree *P, infotype X);
+void ChangeAkar(BinTree *P, infotype X, bool kiri);
 
 void AddDaun(BinTree *P, infotype X, bool Kiri);
 /* I.S. P tidak kosong, X adalah salah satu daun Pohon Biner P */
@@ -88,5 +88,11 @@ void DelBtree(BinTree *P, infotype X);
 /* I.S. Pohon P tidak  kosong */
 /* F.S. Nilai X yang dihapus pasti ada */
 /* Sebuah node dengan nilai X dihapus */
+
+void PrintTree (BinTree T);
+/* I.S. P terdefinisi */
+/* F.S. Semua simpul P sudah dicetak secara preorder: akar, pohon kiri, dan pohon
+kanan. Setiap pohon ditandai dengan tanda kurung buka dan kurung tutup (). */
+/* Contoh: (a (b (d () ()) ()) (c () ())) */
 
 #endif

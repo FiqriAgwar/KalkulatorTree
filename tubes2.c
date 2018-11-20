@@ -49,25 +49,23 @@ float calc(BinTree T){
 	if((Akar(T)).operand == 'b'){
 		return (Akar(T)).value;
 	}
-	else{
-		if((Akar(T)).operand == '+'){
-			return  (calc(Left(T)) + calc(Right(T)));
-		}
-		else if((Akar(T)).operand == '-'){
-			return  (calc(Left(T)) - calc(Right(T)));
-		}
-		else if((Akar(T)).operand == '*'){
-			return  (calc(Left(T)) * calc(Right(T)));
-		}
-		else if((Akar(T)).operand == '/'){
-			return  (calc(Left(T)) / calc(Right(T)));
-		}
-		else if((Akar(T)).operand == '^'){
-			return  pow(calc(Left(T)), calc(Right(T)));
-		}
-		else if((Akar(T)).operand == '.'){
-			return calc(Left(T)) + calc(Right(T))/10;
-		}
+	else if((Akar(T)).operand == '+'){
+		return  (calc(Left(T)) + calc(Right(T)));
+	}
+	else if((Akar(T)).operand == '-'){
+		return  (calc(Left(T)) - calc(Right(T)));
+	}
+	else if((Akar(T)).operand == '*'){
+		return  (calc(Left(T)) * calc(Right(T)));
+	}
+	else if((Akar(T)).operand == '/'){
+		return  (calc(Left(T)) / calc(Right(T)));
+	}
+	else if((Akar(T)).operand == '^'){
+		return  pow(calc(Left(T)), calc(Right(T)));
+	}
+	else if((Akar(T)).operand == '.'){
+		return calc(Left(T)) + calc(Right(T))/10;
 	}
 }
 
@@ -99,11 +97,12 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 	lastNode = T;
 	currentLevel = 99;
 	
-	while(*ekspresi != '\0' && *ekspresi != ')' && *accepted){
-		// skip whitespaces
-		while (*ekspresi == ' ') { ekspresi++; }
+	// skip whitespaces
+	while (*ekspresi == ' ') { ekspresi++; }
 
+	while(*ekspresi != '\0' && *ekspresi != ')' && *accepted){
 		if(nilai(*ekspresi) == -2){ // karakter '('
+			ekspresi++;
 			parse(ekspresi, &tempRec, accepted);
 
 			if (*accepted) {
@@ -127,16 +126,16 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 		else{ // merupakan operand
 			tempInfo = makeInfo(VAL_UNDEF, *ekspresi);
 
-			if(level(*ekspresi) < currentLevel){
-				ChangeAkar(&T, tempInfo);
+			if(level(*ekspresi) <= currentLevel){
+				ChangeAkar(&T, tempInfo, true);
 				lastNode = T;
 			}
 			else{
-				ChangeAkar(&lastNode, tempInfo);
+				ChangeAkar(&lastNode, tempInfo, true);
 			}
+
+			currentLevel = level(*ekspresi);
 		}
-		
-		currentLevel = level(*ekspresi);
 
 		// skip whitespaces
 		while (*ekspresi == ' ') { ekspresi++; }

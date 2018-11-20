@@ -1,5 +1,5 @@
 #include "pohoncalc.h"
-
+#include <stdio.h>
 /* *** Konstruktor *** */
 BinTree Tree(infotype Akar, BinTree L, BinTree R, BinTree P){
 	BinTree T;
@@ -76,15 +76,30 @@ bool IsBiner(BinTree P){
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon biner: mempunyai subpohon kiri dan subpohon kanan*/
 
 /* *** Operasi lain *** */
-void ChangeAkar(BinTree *P, infotype X){
+void ChangeAkar(BinTree *P, infotype X, bool kiri){
 	addrNode M;
 	
 	M = AlokNode(X);
 	
-	Left(M) = *P;
 	if (*P != Nil){
+		if (kiri) {
+			Left(M) = *P;
+		}
+		else {
+			Right(M) = *P;
+		}
+
 		Parent(M) = Parent(*P);
 		Parent(*P) = M;
+
+		if (Parent(M) != Nil) {
+			if (Left(Parent(M)) == *P) {
+				Left(Parent(M)) = M;
+			}
+			else {
+				Right(Parent(M)) = M;
+			}
+		}
 	}
 	
 	*P = M;
@@ -133,3 +148,19 @@ void DelBtree(BinTree *P, infotype X){
 /* F.S. Nilai X yang dihapus pasti ada */
 /* Sebuah node dengan nilai X dihapus */
 
+void PrintTree (BinTree T) {
+	if (IsTreeEmpty(T)) {
+		printf("[]");
+	}
+	else {
+		printf("[%.2f(%c)", (Akar(T)).value, (Akar(T)).operand);
+		PrintTree(Left(T));
+		printf(" ");
+		PrintTree(Right(T));
+		printf("]");
+	}
+}
+/* I.S. P terdefinisi */
+/* F.S. Semua simpul P sudah dicetak secara preorder: akar, pohon kiri, dan pohon
+kanan. Setiap pohon ditandai dengan tanda kurung buka dan kurung tutup (). */
+/* Contoh: (a (b (d () ()) ()) (c () ())) */
