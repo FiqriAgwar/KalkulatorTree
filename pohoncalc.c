@@ -110,7 +110,7 @@ void AddDaun(BinTree *P, infotype X, boolean Kiri){
         sebagai anak Kanan X (jika Kiri = false) */
 /*		Jika ada > 1 daun bernilai X, diambil daun yang paling kiri */
 
-void ChangeAkar(Bintree *P, infotype X){
+void ChangeAkar(BinTree *P, infotype X){
 	addrNode M;
 	
 	M = AlokNode(X);
