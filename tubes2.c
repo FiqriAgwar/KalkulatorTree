@@ -4,57 +4,16 @@
 #include <string.h>
 #include <math.h>
 #include "pohoncalc.h"
-/*
-bool cekKurung(char check[1000]){
-	int countleft=0;
-	int countright=0;
 
-	for(int i=0;i<strlen(check);i++){
-		if(check[i] == '('){
-			countleft++;
-		}
+#define VAL_UNDEF -9999
 
-		if(check[i] == ')'){
-			countright++;
-		}
-	}
-
-	return(countleft == countright);
-}
-
-bool cekDoubleOp(char check[1000]){
-	bool valid = true;
-
-	for(int i=1;i<strlen(check);i++){
-		// check +-*/ /*dengan karakter sebelumnya sebelumnya.
-		//contoh tidak valid = ++ )+ (+ ^+
-		if((((check[i]) == '+') || ((check[i]) == '-') || ((check[i]) == '*') || ((check[i]) == '/') && (((check[i-1]) == '+') || ((check[i-1]) == '-') || ((check[i-1]) == '*') || ((check[i-1]) == '/') || ((check[i-1]) == '(')  || ((check[i-1]) == '^')){
-			valid = false;
-		}
-*/
-		//check ) dengan sebelumnya
-		//seluruh operator kecuali kurung, tepat sebelum ) tidak valid
-/*		if(((check[i]) == ')') && (((check[i-1]) == '+') || ((check[i-1]) == '-') || ((check[i-1]) == '*') || ((check[i-1]) == '/') || ((check[i-1]) == '^'))){
-			valid = false;
-		}
-*/
-		//check ^ dengan sebelumnya
-		// contoh tidak valid : +^ (^
-/*		if(((check[i]) == '^') && (((check[i-1]) == '+') || ((check[i-1]) == '-') || ((check[i-1]) == '*') || ((check[i-1]) == '/') || ((check[i-1]) == '^') || ((check[i-1]) == '('))){
-			valid = false;
-		}
-	}
-
-	return valid;
-}
-*/
 infotype makeInfo(int Value, char Opr){
-	infotype X;
+	infotype tempInfo;
 
-	X.value = Value;
-	X.operand = Opr;
+	tempInfo.value = Value;
+	tempInfo.operand = Opr;
 
-	return X;
+	return tempInfo;
 }
 
 int level(char opr){
@@ -65,7 +24,7 @@ int level(char opr){
 		case '/' : return 2; break;
 		case '^' : return 3; break;
 		case '.' : return 4; break;
-		default : return -1; break;
+		default : return 99; break;
 	}
 }
 
@@ -112,79 +71,92 @@ float calc(BinTree T){
 	}
 }
 
-void parse (char a[1000], float *hasil, bool *accepted){
+void parse (char *ekspresi, float *hasil, bool *accepted){
 	BinTree T;
-	addrNode A, last=Nil;
-	int i=0;
-	float simpan=0;;
-	int now=0;
-	infotype X;
+	addrNode tempNode, lastNode;
+	int tempRec, currentLevel;
+	infotype tempInfo;
 
-	while(a[i] != Nil){
-		if(nilai(a[i]) != -1){
-			simpan = simpan * 10 + nilai(a[i]);
+	*accepted = true;
+
+	// inisialisasi akar
+	tempInfo = makeInfo(0, 'b');
+	T = Tree(tempInfo, Nil, Nil, Nil);
+	lastNode = T;
+	currentLevel = 99;
+	
+	while(*ekspresi != Nil && *ekspresi != ')' && *accepted){
+		// skip whitespaces
+		while (*ekspresi == ' ') { ekspresi++; }
+
+		if(nilai(*ekspresi) == -2){ // karakter '('
+			parse(ekspresi, tempRec, accepted);
+
+			if (*accepted) {
+				// add daun
+				tempInfo = makeInfo(tempRec, 'b');
+				AddDaun(&lastNode, tempInfo, false);
+				lastNode = Right(lastNode);
+			}
 		}
-		else if(nilai(a[i]) == -2){
-
-			//debug yang ini pls
-			X = makeInfo(0, 'b');
-			A = AlokNode(X);
-			Parent(A) = last;
+		else if(nilai(*ekspresi) != -1){ // merupakan angka
+			if (Akar(lastNode).value != VAL_UNDEF) {
+				Akar(lastNode).value = Akar(lastNode).value * 10 + nilai(*ekspresi);
+			}
+			else {
+				// add daun
+				tempInfo = makeInfo(nilai(*ekspresi), 'b');
+				AddDaun(&lastNode, tempInfo, false);
+				lastNode = Right(lastNode);
+			}
 		}
-		else{
-			//sama ini
-			X = makeInfo(simpan, 'b');
-			A = AlokNode(X);
+		else{ // merupakan operand
+			tempInfo = makeInfo(VAL_UNDEF, *ekspresi);
 
-			if(level(a[i]) > now){
-				X = makeInfo(-9999, a[i]);
-				ChangeAkar(&T, X);
-				Parent(A) = T;
-				Left(T) = A;
-				last = Right(A);
+			if(level(*ekspresi) < currentLevel){
+				ChangeAkar(&T, tempInfo);
+				lastNode = T;
 			}
 			else{
-				AddDaun(&T,X,false);
+				ChangeAkar(&lastNode, tempInfo);
 			}
-			simpan = 0;
-			now = level(a[i]);
 		}
-		i++;
+		
+		currentLevel = level(*ekspresi);
+
+		// skip whitespaces
+		while (*ekspresi == ' ') { ekspresi++; }
+
+		ekspresi++;
 	}
 
 	*hasil = calc(T);
+
+	cleaning(T);
 }
 
 
 
 void cleaning(BinTree T){
 
-	while(!IsTreeEmpty(T)){
-		if(IsTreeOneElmt(T)){
-			DealokNode(T);
-		}
-		else{
-			if(IsUnerLeft(T)){
-				cleaning(Left(T));
-			}
-			else if(IsUnerRight(T)){
-				cleaning(Right(T));
-			}
-			else{
-				cleaning(Left(T));
-				cleaning(Right(T));
-			}
-		}
+	if(IsUnerLeft(T)){
+		cleaning(Left(T));
 	}
+
+	if(IsUnerRight(T)){
+		cleaning(Right(T));
+	}
+
+	DealokNode(T);
 }
 
 int main(){
-	char ekspresi[1000];
+	char input[512];
 	float hasil=0;
-	bool acc=true;
+	bool acc;
 
-	scanf("%s", &ekspresi);
-	parse(ekspresi, &hasil, &acc);
+	scanf("%s", input);
+	parse(input, &hasil, &acc);
 
 	printf("%f\n", hasil);
 }

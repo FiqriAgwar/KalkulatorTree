@@ -7,7 +7,8 @@
 #define _POHONCALC_H_
 
 /* Modul lain yang digunakan : */
-#include "boolean.h"
+#include <stdbool.h>
+#include <stdlib.h>
 
 #define Nil NULL /* konstanta Nil sesuai pada modul listrek */
 
@@ -60,19 +61,20 @@ void DealokNode(addrNode P);
 /* Melakukan dealokasi/pengembalian addrNode P */
 
 /* *** Predikat-Predikat Penting *** */
-boolean IsTreeEmpty(BinTree P);
+bool IsTreeEmpty(BinTree P);
 /* Mengirimkan true jika P adalah pohon biner kosong */
-boolean IsTreeOneElmt(BinTree P);
+bool IsTreeOneElmt(BinTree P);
 /* Mengirimkan true jika P adalah pohon biner tidak kosong dan hanya memiliki 1 elemen */
-boolean IsUnerLeft(BinTree P);
+bool IsUnerLeft(BinTree P);
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon unerleft: hanya mempunyai subpohon kiri */
-boolean IsUnerRight(BinTree P);
+bool IsUnerRight(BinTree P);
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon unerright: hanya mempunyai subpohon kanan*/
-boolean IsBiner(BinTree P);
+bool IsBiner(BinTree P);
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon biner: mempunyai subpohon kiri dan subpohon kanan*/
 
+void ChangeAkar(BinTree *P, infotype X);
 
-void AddDaun(BinTree *P, infotype X, boolean Kiri);
+void AddDaun(BinTree *P, infotype X, bool Kiri);
 /* I.S. P tidak kosong, X adalah salah satu daun Pohon Biner P */
 /* F.S. P bertambah simpulnya, dengan Y sebagai anak kiri X (jika Kiri = true), atau 
         sebagai anak Kanan X (jika Kiri = false) */

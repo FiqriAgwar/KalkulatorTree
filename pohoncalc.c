@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "pohoncalc.h"
 
 /* *** Konstruktor *** */
@@ -56,29 +54,43 @@ void DealokNode(addrNode P){
 /* Melakukan dealokasi/pengembalian addrNode P */
 
 /* *** Predikat-Predikat Penting *** */
-boolean IsTreeEmpty(BinTree P){
+bool IsTreeEmpty(BinTree P){
 	return(P == Nil);
 }
 /* Mengirimkan true jika P adalah pohon biner kosong */
-boolean IsTreeOneElmt(BinTree P){
+bool IsTreeOneElmt(BinTree P){
 	return((Right(P) == Nil) && (Left(P) == Nil));
 }
 /* Mengirimkan true jika P adalah pohon biner tidak kosong dan hanya memiliki 1 elemen */
-boolean IsUnerLeft(BinTree P){
+bool IsUnerLeft(BinTree P){
 	return((Right(P) == Nil) && (Left(P) != Nil));
 }
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon unerleft: hanya mempunyai subpohon kiri */
-boolean IsUnerRight(BinTree P){
+bool IsUnerRight(BinTree P){
 	return((Right(P) != Nil) && (Left(P) == Nil));
 }
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon unerright: hanya mempunyai subpohon kanan*/
-boolean IsBiner(BinTree P){
+bool IsBiner(BinTree P){
 	return((Right(P) != Nil) && (Left(P) != Nil));
 }
 /* Mengirimkan true jika pohon biner tidak kosong P adalah pohon biner: mempunyai subpohon kiri dan subpohon kanan*/
 
 /* *** Operasi lain *** */
-void AddDaun(BinTree *P, infotype X, boolean Kiri){
+void ChangeAkar(BinTree *P, infotype X){
+	addrNode M;
+	
+	M = AlokNode(X);
+	
+	Left(M) = *P;
+	if (*P != Nil){
+		Parent(M) = Parent(*P);
+		Parent(*P) = M;
+	}
+	
+	*P = M;
+}
+
+void AddDaun(BinTree *P, infotype X, bool Kiri){
 	addrNode M;
 	
 	M = AlokNode(X);
@@ -109,20 +121,6 @@ void AddDaun(BinTree *P, infotype X, boolean Kiri){
 /* F.S. P bertambah simpulnya, dengan Y sebagai anak kiri X (jika Kiri = true), atau 
         sebagai anak Kanan X (jika Kiri = false) */
 /*		Jika ada > 1 daun bernilai X, diambil daun yang paling kiri */
-
-void ChangeAkar(BinTree *P, infotype X){
-	addrNode M;
-	
-	M = AlokNode(X);
-	
-	Left(M) = *P;
-	if (*P != Nil){
-		Parent(M) = Parent(*P);
-		Parent(*P) = M;
-	}
-	
-	*P = M;
-}
 
 void DelDaun(BinTree *P, infotype X){
 }
