@@ -8,52 +8,52 @@
 bool cekKurung(char check[1000]){
 	int countleft=0;
 	int countright=0;
-	
+
 	for(int i=0;i<strlen(check);i++){
 		if(check[i] == '('){
 			countleft++;
 		}
-		
+
 		if(check[i] == ')'){
 			countright++;
 		}
 	}
-	
+
 	return(countleft == countright);
 }
 
 bool cekDoubleOp(char check[1000]){
 	bool valid = true;
-	
+
 	for(int i=1;i<strlen(check);i++){
 		// check +-*/ /*dengan karakter sebelumnya sebelumnya.
 		//contoh tidak valid = ++ )+ (+ ^+
 		if((((check[i]) == '+') || ((check[i]) == '-') || ((check[i]) == '*') || ((check[i]) == '/') && (((check[i-1]) == '+') || ((check[i-1]) == '-') || ((check[i-1]) == '*') || ((check[i-1]) == '/') || ((check[i-1]) == '(')  || ((check[i-1]) == '^')){
 			valid = false;
-		} 
-*/		
+		}
+*/
 		//check ) dengan sebelumnya
 		//seluruh operator kecuali kurung, tepat sebelum ) tidak valid
 /*		if(((check[i]) == ')') && (((check[i-1]) == '+') || ((check[i-1]) == '-') || ((check[i-1]) == '*') || ((check[i-1]) == '/') || ((check[i-1]) == '^'))){
 			valid = false;
 		}
-*/		
+*/
 		//check ^ dengan sebelumnya
 		// contoh tidak valid : +^ (^
 /*		if(((check[i]) == '^') && (((check[i-1]) == '+') || ((check[i-1]) == '-') || ((check[i-1]) == '*') || ((check[i-1]) == '/') || ((check[i-1]) == '^') || ((check[i-1]) == '('))){
 			valid = false;
 		}
 	}
-	
+
 	return valid;
 }
 */
 infotype makeInfo(int Value, char Opr){
 	infotype X;
-	
+
 	X.value = Value;
 	X.operand = Opr;
-	
+
 	return X;
 }
 
@@ -89,7 +89,7 @@ int nilai(char value){
 float calc(BinTree T){
 	if((Akar(T)).operand == 'b'){
 		return (Akar(T)).value;
-	} 
+	}
 	else{
 		if((Akar(T)).operand == '+'){
 			return  (calc(Left(T)) + calc(Right(T)));
@@ -107,7 +107,7 @@ float calc(BinTree T){
 			return  pow(calc(Left(T)), calc(Right(T)));
 		}
 		else if((Akar(T)).operand == '.'){
-			//gak tahu
+			return calc(Left(T)) + calc(Right(T))/10;
 		}
 	}
 }
@@ -119,13 +119,13 @@ void parse (char a[1000], float *hasil, bool *accepted){
 	float simpan=0;;
 	int now=0;
 	infotype X;
-	
+
 	while(a[i] != Nil){
 		if(nilai(a[i]) != -1){
 			simpan = simpan * 10 + nilai(a[i]);
 		}
 		else if(nilai(a[i]) == -2){
-			
+
 			//debug yang ini pls
 			X = makeInfo(0, 'b');
 			A = AlokNode(X);
@@ -135,7 +135,7 @@ void parse (char a[1000], float *hasil, bool *accepted){
 			//sama ini
 			X = makeInfo(simpan, 'b');
 			A = AlokNode(X);
-			
+
 			if(level(a[i]) > now){
 				X = makeInfo(-9999, a[i]);
 				ChangeAkar(&T, X);
@@ -151,14 +151,14 @@ void parse (char a[1000], float *hasil, bool *accepted){
 		}
 		i++;
 	}
-	
+
 	*hasil = calc(T);
 }
 
 
 
 void cleaning(BinTree T){
-	
+
 	while(!IsTreeEmpty(T)){
 		if(IsTreeOneElmt(T)){
 			DealokNode(T);
@@ -182,9 +182,9 @@ int main(){
 	char ekspresi[1000];
 	float hasil=0;
 	bool acc=true;
-	
+
 	scanf("%s", &ekspresi);
 	parse(ekspresi, &hasil, &acc);
-	
+
 	printf("%f\n", hasil);
 }
