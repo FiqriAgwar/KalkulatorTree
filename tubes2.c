@@ -104,6 +104,9 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 		if(nilai(*ekspresi) == -2){ // karakter '('
 			ekspresi++;
 			parse(ekspresi, &tempRec, accepted);
+			
+			// skip to after parenthesis
+			while (*ekspresi != ')') { ekspresi++; }
 
 			if (*accepted) {
 				// add daun
