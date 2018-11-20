@@ -17,7 +17,7 @@
 
 typedef struct {
 	char operand;
-	int value;
+	float value;
 }infotype;
 typedef struct tNode *addrNode;
 typedef struct tNode

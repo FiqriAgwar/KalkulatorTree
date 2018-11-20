@@ -71,10 +71,24 @@ float calc(BinTree T){
 	}
 }
 
+void cleaning(BinTree T){
+
+	if(IsUnerLeft(T)){
+		cleaning(Left(T));
+	}
+
+	if(IsUnerRight(T)){
+		cleaning(Right(T));
+	}
+
+	DealokNode(T);
+}
+
 void parse (char *ekspresi, float *hasil, bool *accepted){
 	BinTree T;
 	addrNode tempNode, lastNode;
-	int tempRec, currentLevel;
+	float tempRec;
+	int currentLevel;
 	infotype tempInfo;
 
 	*accepted = true;
@@ -85,12 +99,12 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 	lastNode = T;
 	currentLevel = 99;
 	
-	while(*ekspresi != Nil && *ekspresi != ')' && *accepted){
+	while(*ekspresi != '\0' && *ekspresi != ')' && *accepted){
 		// skip whitespaces
 		while (*ekspresi == ' ') { ekspresi++; }
 
 		if(nilai(*ekspresi) == -2){ // karakter '('
-			parse(ekspresi, tempRec, accepted);
+			parse(ekspresi, &tempRec, accepted);
 
 			if (*accepted) {
 				// add daun
@@ -135,21 +149,6 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 	cleaning(T);
 }
 
-
-
-void cleaning(BinTree T){
-
-	if(IsUnerLeft(T)){
-		cleaning(Left(T));
-	}
-
-	if(IsUnerRight(T)){
-		cleaning(Right(T));
-	}
-
-	DealokNode(T);
-}
-
 int main(){
 	char input[512];
 	float hasil=0;
@@ -158,5 +157,5 @@ int main(){
 	scanf("%s", input);
 	parse(input, &hasil, &acc);
 
-	printf("%f\n", hasil);
+	printf("%.2f\n", hasil);
 }
