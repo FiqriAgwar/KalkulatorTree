@@ -7,7 +7,7 @@
 
 #define VAL_UNDEF -9999
 
-infotype makeInfo(int Value, char Opr){
+infotype makeInfo(float Value, char Opr){
 	infotype tempInfo;
 
 	tempInfo.value = Value;
@@ -45,28 +45,66 @@ int nilai(char value){
 	}
 }
 
-float calc(BinTree T){
-	if((Akar(T)).operand == 'b'){
-		return (Akar(T)).value;
+void calc(BinTree T, float *hasil, bool *acc){
+	if(*acc){
+		float hasilkiri=0, hasilkanan=0;
+		bool acc2=true;
+		
+		if((Akar(T)).operand == 'b'){
+			*hasil = (Akar(T)).value;
+		}
+		else if((Akar(T)).operand == '+'){
+			calc(Left(T),&hasilkiri,&acc2);
+			calc(Right(T),&hasilkanan,&acc2);
+			
+			*hasil = hasilkiri+hasilkanan;
+		}
+		else if((Akar(T)).operand == '-'){
+			calc(Left(T),&hasilkiri,&acc2);
+			calc(Right(T),&hasilkanan,&acc2);
+			
+			*hasil = hasilkiri-hasilkanan;
+		}
+		else if((Akar(T)).operand == '*'){
+			calc(Left(T),&hasilkiri,&acc2);
+			calc(Right(T),&hasilkanan,&acc2);
+			
+			*hasil = hasilkiri*hasilkanan;
+		}
+		else if((Akar(T)).operand == '/'){
+			calc(Left(T),&hasilkiri,&acc2);
+			calc(Right(T),&hasilkanan,&acc2);
+			
+			if(hasilkanan != 0){
+				*hasil = (hasilkiri / hasilkanan);
+			}
+			else{
+				*acc = false;
+			}
+		}
+		else if((Akar(T)).operand == '^'){
+			calc(Left(T),&hasilkiri,&acc2);
+			calc(Right(T),&hasilkanan,&acc2);
+			
+			if((hasilkiri <0) && ((hasilkanan) > (-1)) && (hasilkiri < 1)){
+				*acc = false;
+			}
+			else{
+				*hasil = pow(hasilkiri,hasilkanan);
+			}
+		}
+		else if((Akar(T)).operand == '.'){
+			calc(Left(T),&hasilkiri,&acc2);
+			calc(Right(T),&hasilkanan,&acc2);
+			
+			while((hasilkanan > 1) || (hasilkanan < -1)){
+				hasilkanan /= 10;
+			}
+			
+			*hasil = hasilkiri+hasilkanan;
+		}
 	}
-	else if((Akar(T)).operand == '+'){
-		return  (calc(Left(T)) + calc(Right(T)));
-	}
-	else if((Akar(T)).operand == '-'){
-		return  (calc(Left(T)) - calc(Right(T)));
-	}
-	else if((Akar(T)).operand == '*'){
-		return  (calc(Left(T)) * calc(Right(T)));
-	}
-	else if((Akar(T)).operand == '/'){
-		return  (calc(Left(T)) / calc(Right(T)));
-	}
-	else if((Akar(T)).operand == '^'){
-		return  pow(calc(Left(T)), calc(Right(T)));
-	}
-	else if((Akar(T)).operand == '.'){
-		return calc(Left(T)) + calc(Right(T))/10;
-	}
+	
 }
 
 void cleaning(BinTree T){
@@ -88,6 +126,7 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 	float tempRec;
 	int currentLevel;
 	infotype tempInfo;
+	bool statusopr=true;
 
 	*accepted = true;
 
@@ -125,19 +164,26 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 				AddDaun(&lastNode, tempInfo, false);
 				lastNode = Right(lastNode);
 			}
+			
+			statusopr = false;
 		}
 		else{ // merupakan operand
 			tempInfo = makeInfo(VAL_UNDEF, *ekspresi);
+			if(!statusopr){ //sebelumnya bukan operand
+				if(level(*ekspresi) <= currentLevel){
+					ChangeAkar(&T, tempInfo, true);
+					lastNode = T;
+				}
+				else{
+					ChangeAkar(&lastNode, tempInfo, true);
+				}
 
-			if(level(*ekspresi) <= currentLevel){
-				ChangeAkar(&T, tempInfo, true);
-				lastNode = T;
+				currentLevel = level(*ekspresi);
+				statusopr = true;
 			}
 			else{
-				ChangeAkar(&lastNode, tempInfo, true);
+				*accepted = false;
 			}
-
-			currentLevel = level(*ekspresi);
 		}
 
 		// skip whitespaces
@@ -145,9 +191,23 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 
 		ekspresi++;
 	}
-
-	*hasil = calc(T);
-
+	
+	PrintTree(T);
+	
+	if(*accepted){
+		calc(T, hasil, accepted);
+		
+		if(*accepted){
+			printf("hasil=%.2f\n", *hasil);
+		}
+		else{
+			printf("MATH ERROR\n");
+		}
+	}
+	else{
+		printf("SYNTAX ERROR\n");
+	}
+	
 	cleaning(T);
 }
 
@@ -158,6 +218,6 @@ int main(){
 
 	scanf("%s", input);
 	parse(input, &hasil, &acc);
-
-	printf("%.2f\n", hasil);
+	
+	//printf("%.2f\n", hasil);
 }
