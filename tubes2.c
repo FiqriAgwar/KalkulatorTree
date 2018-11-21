@@ -108,6 +108,7 @@ void calc(BinTree T, float *hasil, bool *acc){
 }
 
 bool hitungkurung(char *ekspresi){
+	//menghitung jumlah kurung yang ada
 	int kurungkiri=0,kurungkanan=0;
 	
 	while(*ekspresi != '\0'){
@@ -121,13 +122,11 @@ bool hitungkurung(char *ekspresi){
 		ekspresi++;
 	}
 	
-	printf("%d %d\n", kurungkiri, kurungkanan);
-	
 	return (kurungkiri == kurungkanan);
 }
 
 void cleaning(BinTree T){
-
+	//menghapus dan dealokasi tree
 	if(IsUnerLeft(T)){
 		cleaning(Left(T));
 	}
@@ -154,19 +153,15 @@ void parse (char **ekspresi, float *hasil, bool *accepted){
 	T = Tree(tempInfo, Nil, Nil, Nil);
 	lastNode = T;
 	currentLevel = 99;
+
 	// skip whitespaces
 	while (**ekspresi == ' ') { *ekspresi += 1; }
-	PrintTree(T);
-	printf("\n");
+	
 	while(**ekspresi != '\0' && **ekspresi != ')' && *accepted){
 		if(nilai(**ekspresi) == -2){ // karakter '('
 			*ekspresi += 1;
 
 			parse(ekspresi, &tempRec, accepted);
-			
-			//*ekspresi += 1;
-			// skip to after parenthesis
-			//while (**ekspresi != ')') { *ekspresi++; }
 
 			if (*accepted) {
 				tempInfo = makeInfo(tempRec, 'b');
@@ -219,21 +214,14 @@ void parse (char **ekspresi, float *hasil, bool *accepted){
 
 		// skip whitespaces
 		while (**ekspresi == ' ') { *ekspresi += 1; }
-		PrintTree(T);
-		printf("\n");
+		
 		*ekspresi += 1;
 	}
-	
-	PrintTree(T);
-	printf("\n");
 	
 	if(*accepted){
 		calc(T, hasil, accepted);
 		
-		if(*accepted){
-			printf("hasil=%.2f\n", *hasil);
-		}
-		else{
+		if(!*accepted){
 			printf("MATH ERROR\n");
 		}
 	}
@@ -247,7 +235,7 @@ void parse (char **ekspresi, float *hasil, bool *accepted){
 int main(){
 	char input[512];
 	char *inputAddress;
-	float hasil=0;
+	float hasil;
 	bool acc;
 
 	scanf("%s", input);
@@ -262,6 +250,7 @@ int main(){
 		printf("SYNTAX ERROR\n");
 	}
 
-	
-	//printf("%.2f\n", hasil);
+	if (acc) {
+		printf("%.2f\n", hasil);
+	}
 }

@@ -80,15 +80,6 @@ void AddDaun(BinTree *P, infotype X, bool Kiri);
         sebagai anak Kanan X (jika Kiri = false) */
 /*		Jika ada > 1 daun bernilai X, diambil daun yang paling kiri */
 
-void DelDaun(BinTree *P, infotype X);
-/* I.S. P tidak kosong, minimum ada 1 daun bernilai X. */
-/* F.S. Semua daun bernilai X dihapus dari P. */
-
-void DelBtree(BinTree *P, infotype X);
-/* I.S. Pohon P tidak  kosong */
-/* F.S. Nilai X yang dihapus pasti ada */
-/* Sebuah node dengan nilai X dihapus */
-
 void PrintTree (BinTree T);
 /* I.S. P terdefinisi */
 /* F.S. Semua simpul P sudah dicetak secara preorder: akar, pohon kiri, dan pohon
