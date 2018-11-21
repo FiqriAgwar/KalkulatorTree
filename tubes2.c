@@ -107,6 +107,25 @@ void calc(BinTree T, float *hasil, bool *acc){
 	
 }
 
+bool hitungkurung(char *ekspresi){
+	int kurungkiri=0,kurungkanan=0;
+	
+	while(*ekspresi != '\0'){
+		if(*ekspresi == '('){
+			kurungkiri++;
+		}
+		else if(*ekspresi == ')'){
+			kurungkanan++;
+		}
+		
+		ekspresi++;
+	}
+	
+	printf("%d %d\n", kurungkiri, kurungkanan);
+	
+	return (kurungkiri == kurungkanan);
+}
+
 void cleaning(BinTree T){
 
 	if(IsUnerLeft(T)){
@@ -126,73 +145,74 @@ void parse (char *ekspresi, float *hasil, bool *accepted){
 	float tempRec;
 	int currentLevel;
 	infotype tempInfo;
-	bool statusopr=true;
+	bool statusopr=false;
 
 	*accepted = true;
-
-	// inisialisasi akar
-	tempInfo = makeInfo(0, 'b');
-	T = Tree(tempInfo, Nil, Nil, Nil);
-	lastNode = T;
-	currentLevel = 99;
 	
-	// skip whitespaces
-	while (*ekspresi == ' ') { ekspresi++; }
-
-	while(*ekspresi != '\0' && *ekspresi != ')' && *accepted){
-		if(nilai(*ekspresi) == -2){ // karakter '('
-			ekspresi++;
-			parse(ekspresi, &tempRec, accepted);
-			
-			// skip to after parenthesis
-			while (*ekspresi != ')') { ekspresi++; }
-
-			if (*accepted) {
-				// add daun
-				tempInfo = makeInfo(tempRec, 'b');
-				AddDaun(&lastNode, tempInfo, false);
-				lastNode = Right(lastNode);
-			}
-		}
-		else if(nilai(*ekspresi) != -1){ // merupakan angka
-			if (Akar(lastNode).value != VAL_UNDEF) {
-				Akar(lastNode).value = Akar(lastNode).value * 10 + nilai(*ekspresi);
-			}
-			else {
-				// add daun
-				tempInfo = makeInfo(nilai(*ekspresi), 'b');
-				AddDaun(&lastNode, tempInfo, false);
-				lastNode = Right(lastNode);
-			}
-			
-			statusopr = false;
-		}
-		else{ // merupakan operand
-			tempInfo = makeInfo(VAL_UNDEF, *ekspresi);
-			if(!statusopr){ //sebelumnya bukan operand
-				if(level(*ekspresi) <= currentLevel){
-					ChangeAkar(&T, tempInfo, true);
-					lastNode = T;
-				}
-				else{
-					ChangeAkar(&lastNode, tempInfo, true);
-				}
-
-				currentLevel = level(*ekspresi);
-				statusopr = true;
-			}
-			else{
-				*accepted = false;
-			}
-		}
-
+		// inisialisasi akar
+		tempInfo = makeInfo(0, 'b');
+		T = Tree(tempInfo, Nil, Nil, Nil);
+		lastNode = T;
+		currentLevel = 99;
+		
 		// skip whitespaces
 		while (*ekspresi == ' ') { ekspresi++; }
-
-		ekspresi++;
-	}
 	
-	PrintTree(T);
+		while(*ekspresi != '\0' && *ekspresi != ')' && *accepted){
+			if(nilai(*ekspresi) == -2){ // karakter '('
+				ekspresi++;
+				parse(ekspresi, &tempRec, accepted);
+				
+				// skip to after parenthesis
+				while (*ekspresi != ')') { ekspresi++; }
+	
+				if (*accepted) {
+					// add daun
+					tempInfo = makeInfo(tempRec, 'b');
+					AddDaun(&lastNode, tempInfo, false);
+					lastNode = Right(lastNode);
+				}
+			}
+			else if(nilai(*ekspresi) != -1){ // merupakan angka
+				if (Akar(lastNode).value != VAL_UNDEF) {
+					Akar(lastNode).value = Akar(lastNode).value * 10 + nilai(*ekspresi);
+				}
+				else {
+					// add daun
+					tempInfo = makeInfo(nilai(*ekspresi), 'b');
+					AddDaun(&lastNode, tempInfo, false);
+					lastNode = Right(lastNode);
+				}
+				
+				statusopr = false;
+			}
+			else{ // merupakan operand
+				tempInfo = makeInfo(VAL_UNDEF, *ekspresi);
+				if(!statusopr){ //sebelumnya bukan operand
+					if(level(*ekspresi) <= currentLevel){
+						ChangeAkar(&T, tempInfo, true);
+						lastNode = T;
+					}
+					else{
+						ChangeAkar(&lastNode, tempInfo, true);
+					}
+	
+					currentLevel = level(*ekspresi);
+					statusopr = true;
+				}
+				else{
+					*accepted = false;
+				}
+			}
+	
+			// skip whitespaces
+			while (*ekspresi == ' ') { ekspresi++; }
+	
+			ekspresi++;
+		}
+		
+		//PrintTree(T);
+	
 	
 	if(*accepted){
 		calc(T, hasil, accepted);
@@ -217,7 +237,15 @@ int main(){
 	bool acc;
 
 	scanf("%s", input);
-	parse(input, &hasil, &acc);
 	
+	acc = hitungkurung(input);
+	
+	if(acc){
+		parse(input, &hasil, &acc);
+	}
+	else{
+		printf("SYNTAX ERROR\n");
+	}
+
 	//printf("%.2f\n", hasil);
 }
