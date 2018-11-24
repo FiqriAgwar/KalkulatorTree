@@ -196,16 +196,27 @@ void parse (char **ekspresi, float *hasil, bool *accepted){
 			tempInfo = makeInfo(VAL_UNDEF, **ekspresi);
 
 			if(!statusopr){ //sebelumnya bukan operand
-				if(level(**ekspresi) <= currentLevel){
-					ChangeAkar(&T, tempInfo, true);
-					lastNode = T;
+				if(level(**ekspresi) == 4){
+					if(koma){
+						*accepted = false;
+					}
+					else{
+						koma = true;
+					}
 				}
 				else{
-					ChangeAkar(&lastNode, tempInfo, true);
+					koma = false;
+					if(level(**ekspresi) <= currentLevel){
+						ChangeAkar(&T, tempInfo, true);
+						lastNode = T;
+					}
+					else{
+						ChangeAkar(&lastNode, tempInfo, true);
+					}
+	
+					currentLevel = level(**ekspresi);
+					statusopr = true;
 				}
-
-				currentLevel = level(**ekspresi);
-				statusopr = true;
 			}
 			else{
 				*accepted = false;
